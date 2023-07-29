@@ -1,0 +1,22 @@
+{% extends 'form_block.html' %}
+{% load static %}
+{% block title %}Join us{% endblock %}
+{% block form %}
+    <div class="card-body p-5">
+        <h2 class="text-uppercase text-center mb-5">Update profile</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="d-flex justify-content-center">
+                <button type="submit"
+                        class="btn btn-success fw-bold">Save profile
+                </button>
+                <a href="{% url 'password_change' %}" class="btn btn-success fw-bold">Change password</a>
+            </div>
+            <br>
+            <div class="d-flex justify-content-center">
+                <a href="{% url 'logout' %}" class="btn btn-danger fw-bold">Logout</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

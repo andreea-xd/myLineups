@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+{% block title %} Video {% endblock %}
+
+{% block content %}
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const params = new Proxy(new URLSearchParams(window.location.search), {
+                get: (searchParams, prop) => searchParams.get(prop),
+            });
+            console.log(params.agent_id)
+            if (params.agent_id) {
+                document.getElementById('agent_' + params.agent_id).click()
+            }
+            if (params.map_id) {
+                document.getElementById('map_' + params.map_id).click()
+            }
+        });
+
+        let previouslySelectedMap = null;
+        let previouslySelectedAgent = null;
+        let previouslySelectedAbility = null;
+
+        function populateZones(zones, theElem) {
+            let cPart = document.getElementById('c_part');
+            let cPart2 = document.getElementById('c_part2');
+            if (zones.length === 2 && !cPart.hasAttribute('disabled')) {
+                cPart.setAttribute('disabled', true);
+                cPart.style.display = 'none';
+                cPart2.setAttribute('disabled', true);
+                cPart2.style.display = 'none';
+            } else if (zones.length === 3 && cPart.hasAttribute('disabled')) {
+                cPart.removeAttribute('disabled');
+                cPart.style.display = 'block';
+                cPart2.removeAttribute('disabled');
+                cPart2.style.display = 'block';
+            }
+
+
+            if (previouslySelectedMap !== null)
+                previouslySelectedMap.style.border = '0px solid black'
+
+
+            {#console.log(theElem);#}
+            theElem.style.border = '2px solid red';
+            previouslySelectedMap = theElem;
+
+        }
+
+        function populateAbilities(abilities, abilityIds, theElement) {
+            if (previouslySelectedAgent !== null)
+                previouslySelectedAgent.style.border = '0px solid black'
+            previouslySelectedAgent = theElement;
+            theElement.style.border = '2px solid red';
+            previouslySelectedAgent = theElement;
+
+
+            if (previouslySelectedAbility !== null)
+                previouslySelectedAbility.style.border = '0px solid black';
+
+            {##}
+            {#console.log('abilities=' + abilities.toString());#}
+            {#console.log('abilityIds=' + abilityIds.toString());#}
+
+            let abilitiesDiv = document.getElementById('abilities');
+            abilitiesDiv.innerHTML = "";
+
+            {#for (let agent in agents) {#}
+            {#    let elem = document.createElement("img");#}
+            {#    let agentId = agentIds[agent];#}
+            {#    elem.setAttribute("src", agents[agent]);#}
+            {#    elem.setAttribute("height", "100");#}
+            {#    elem.setAttribute("width", "100");#}
+            {#    elem.setAttribute('class', 'agent');#}
+            {#    elem.setAttribute("alt", "");#}
+
+
+            for (let ability in abilities) {
+                let elem = document.createElement("img");
+                let abilityId = abilityIds[ability];
+                elem.setAttribute("src", abilities[ability]);
+                elem.setAttribute("height", "71");
+                elem.setAttribute("width", "71");
+                elem.setAttribute('class', 'ability');
+                elem.setAttribute("alt", "");
+                elem.onclick = ({target}) => {
+                    elem.style.border = '2px solid red';
+                    document.getElementById('ability_id').value = abilityId;
+                    if (previouslySelectedAbility !== null)
+                        previouslySelectedAbility.style.border = '0px solid black';
+
+                    previouslySelectedAbility = target
+
+                };
+                abilitiesDiv.appendChild(elem);
+            }
+        }
+    </script>
+
+
+{#    <h2>Find your perfect lineup</h2>#}
+
+    <div class="row m-0">
+        <div class="col-12 col-lg-5 m-0" style="padding-left: 70px">
+            <h3>Choose your map:</h3>
+            <div class="row m-0">
+                {% for map in maps %}
+                    <div class="col-lg-4 col-md-4 col-6 m-0">
+                        <div class="card text-bg-dark mb-2"
+                             id="map_{{ map.id }}"
+                             onclick="populateZones('{{ map.part }}'.split(' '), this);
+                                     document.getElementById('map_id').value='{{ map.id }}';">
+                            <img src="{{ map.image.url }}" alt="">
+                            <div class="card-img-overlay d-flex justify-content-center align-items-center"
+                                 style="background-color: #00000033">
+                                <h2 class="card-title">{{ map.name }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+
+            <div class="m-0">
+                <h3>What you'd like to see?</h3>
+                <div class="btn-group" style="background: #DBE4C6" role="group" aria-label="Basic radio toggle button group">
+                    <input type="radio" name="a" class="btn-check" id="btnradio1"
+                           onchange="document.getElementById('type').value='Lineup';" autocomplete="off"
+                           value="Lineup">
+                    <label class="btn btn-outline-primary" for="btnradio1"><strong>Lineup</strong></label>
+
+                    <input type="radio" name="a" class="btn-check" id="btnradio2"
+                           onchange="document.getElementById('type').value='Setup';" autocomplete="off">
+                    <label class="btn btn-outline-primary" for="btnradio2"><strong>Setup</strong></label>
+
+                    <input type="radio" name="a" class="btn-check" id="btnradio3"
+                           onchange="document.getElementById('type').value='Mechanics';" autocomplete="off">
+                    <label class="btn btn-outline-primary" for="btnradio3"><strong>Mechanics</strong></label>
+                </div>
+            </div>
+
+            <div class="m-0 ">
+                <h3>Choose your side:</h3>
+                <div class="btn-group" style="background: #DBE4C6" role="group" aria-label="Basic radio toggle button group">
+                    <input type="radio" name="b" class="btn-check" id="btnradio4" autocomplete="off"
+                           onchange="document.getElementById('side').value='A';">
+                    <label class="btn btn-outline-primary" for="btnradio4"><strong> A </strong></label>
+
+                    <input type="radio" name="b" class="btn-check" id="btnradio5"
+                           onchange="document.getElementById('side').value='B';" autocomplete="off">
+                    <label class="btn btn-outline-primary" for="btnradio5"><strong> B </strong></label>
+
+                    <input id="c_part" name="b" type="radio" class="btn-check"
+                           onchange="document.getElementById('side').value='C';" autocomplete="off">
+                    <label id="c_part2" class="btn btn-outline-primary" for="c_part"><strong> C </strong></label>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-12 col-lg-7 m-0" style="padding-right: 100px">
+            <div>
+                <h3>Pick your agent:</h3>
+                <div class="row m-0">
+                    {% for agent in agents %}
+                        <div class="container text-center mb-2" style="width: 90px">
+                            <div class="card" style="background: #DBE4C6; width: 90px;" id="agent_{{ agent.id }}"
+                                 onclick="populateAbilities(
+                                         [{% for a in agent.ability_set.all %}'{{ a.image.url }}', {% endfor %}],
+                                         [{% for a in agent.ability_set.all %}'{{ a.id }}', {% endfor %}], this);
+                                         document.getElementById('agent_id').value = '{{ agent.id }}';">
+                                <div class="row g-0">
+                                    <div>
+                                        <img src="{{ agent.image.url }}" class="col-12" alt="">
+                                        <p class="list-group list-group-flush">  {{ agent.name }}</p>
+                                    </div>
+                                    <div class="col-md-12">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="m-0">
+                <h3>Pick your ability:</h3>
+                <div class="d-flex align-items-start m-2" id="abilities">
+                </div>
+            </div>
+            <form action="" id="form">
+                <input type="hidden" id="map_id" value="" name="map_id">
+                <input type="hidden" id="agent_id" value="" name="agent_id">
+                <input type="hidden" id="ability_id" value="" name="ability_id">
+                <input type="hidden" id="type" value="" name="type">
+                <input type="hidden" id="side" value="" name="side">
+
+                <button class="btn btn-success" type="submit">Filter</button>
+            </form>
+        </div>
+        <div id="videos" class="col-12 m-5">
+
+            <h3>Cool stuff</h3>
+            <div class="row">
+                {% for video in videos %}
+                    <div class="col-12 col-sm-6 col-md-3 col-lg-2" style="background: center">
+                        <div class="card-body">
+{#                            <div class="card-body">#}
+{#                                <h5 class="card-title">{{ video.agent }}</h5>#}
+                                <iframe width="680" height="360"
+                                        src="https://www.youtube.com/embed/{{ video.youtube_id }}" class="col-12"
+                                        title="YouTube video player" frameborder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope;
+                                picture-in-picture; web-share"
+                                        allowfullscreen></iframe>
+{#                            </div>#}
+{#                            <ul class="list-group list-group-flush">#}
+{#                                <li class="list-group-item">{{ video.ability }}</li>#}
+{#                                <li class="list-group-item">{{ video.map }}</li>#}
+{#                            </ul>#}
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

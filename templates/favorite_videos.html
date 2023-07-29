@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Saved{% endblock %}
+{% block content %}
+    <head>
+        <title>Favorite Videos</title>
+    </head>
+    <body>
+    <h1>Favorite Videos</h1>
+    <p>Select your favorite videos from the list below:</p>
+    <ul>
+        <li>
+            <a href="#">Video 1</a>
+            <span class="favorite-star" onclick="toggleFavorite(this)">☆</span>
+        </li>
+        <li>
+            <a href="#">Video 2</a>
+            <span class="favorite-star" onclick="toggleFavorite(this)">☆</span>
+        </li>
+        <li>
+            <a href="#">Video 3</a>
+            <span class="favorite-star" onclick="toggleFavorite(this)">☆</span>
+        </li>
+    </ul>
+    <script>
+        function toggleFavorite(star) {
+            if (star.innerHTML === '☆') {
+                star.innerHTML = '★';
+            } else {
+                star.innerHTML = '☆';
+            }
+        }
+    </script>
+    <script>
+      class FavoriteVideos {
+        constructor() {
+          this.videos = document.querySelectorAll('.favorite-videos li');
+          this.videos.forEach(video => {
+            const star = video.querySelector('.favorite-star');
+            star.addEventListener('click', () => this.toggleFavorite(star));
+          });
+        }
+
+        toggleFavorite(star) {
+          if (star.innerHTML === '☆') {
+            star.innerHTML = '★';
+          } else {
+            star.innerHTML = '☆';
+          }
+        }
+      }
+
+      const favoriteVideos = new FavoriteVideos();
+    </script>
+    </body>
+{% endblock %}
